@@ -97,7 +97,6 @@ public class UserController {
         Set<Role> rolesNew = new HashSet<>();
         if(roles != null) {
             for (int i = 0; i < roles.length; i++) {
-                //System.out.println(roles[i]);
                 rolesNew.add(roleService.findById(roles[i]));
             }
         }
@@ -113,6 +112,31 @@ public class UserController {
     public String deleteUser(@RequestParam(name="id") Long id) {
         System.out.println(id);
         userService.deleteById(id);
+        return "redirect:/users";
+    }
+
+    @GetMapping(value ="/create_user")
+    public String createUser(Model model) {
+        model.addAttribute("user",new User());
+        model.addAttribute("roles",roleService.findAll());
+        return "create_user";
+    }
+
+    @PostMapping(value="/create_user")
+    public String createUser(User user, Model model,
+                             @RequestParam(value = "role" , required = false) long[] roles) {
+        Set<Role> rolesNew = new HashSet<>();
+        if(roles != null) {
+            for (int i = 0; i < roles.length; i++) {
+                rolesNew.add(roleService.findById(roles[i]));
+            }
+        }
+        User userDb = userService.findById(user.getId());
+        userDb.setUsername(user.getUsername());
+        userDb.setEnabled(user.isEnabled());
+        userDb.setRoles(rolesNew);
+        userService.save(userDb);
+        model.addAttribute("user", userService.findAll());
         return "redirect:/users";
     }
 }
