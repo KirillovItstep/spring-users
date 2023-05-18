@@ -131,12 +131,10 @@ public class UserController {
                 rolesNew.add(roleService.findById(roles[i]));
             }
         }
-        User userDb = userService.findById(user.getId());
-        userDb.setUsername(user.getUsername());
-        userDb.setEnabled(user.isEnabled());
-        userDb.setRoles(rolesNew);
-        userService.save(userDb);
-        model.addAttribute("user", userService.findAll());
+        user.setRoles(rolesNew);
+
+        userService.save(user);
+        model.addAttribute("users", userService.findAll());
         return "redirect:/users";
     }
 }
